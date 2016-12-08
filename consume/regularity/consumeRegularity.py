@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib.pyplot as plt
-regularityWithWork = '/home/sghipr/consumeRegularityWithWork.csv'
+regularityWithWork = 'D:/GraduationThesis/consumeRegularityWithWork.csv'
 def analysizeRegularity(startIndex,term,type,classValue,year='2010'):
     """
     针对不同的学生群体进行分析
@@ -28,18 +28,24 @@ def analysizeRegularity(startIndex,term,type,classValue,year='2010'):
     result = sorted(timeInterals.items(),key= lambda x:x[0])
     xList = []
     yList = []
-    for x,y in result:
-        xList.append(x)
-        yList.append(y)
+    for x, y in result:
+        if x > '0600' and x < '2000':
+            xList.append(x)
+            yList.append(y)
 
-    plt.figure(figsize=(12,9))
-    plt.plot(range(1,len(xList) + 1),yList)
-    plt.xticks(range(1,len(xList) + 1),xList)
+    sumValue = sum(yList) + 0.0
+    for i in range(0,len(yList)):
+        yList[i] /= sumValue
+
+    title = type + ',' + str(term) + ',' + year + ',' + classValue
+    plt.figure(figsize=(20,9))
+    plt.plot(range(1,len(xList) + 1),yList,color='black', markersize=10)
+    plt.grid(True)
+    plt.xticks(range(1,len(xList) + 1),xList,rotation=45)
     plt.xlabel('time interals')
     plt.ylabel('frequences')
-    plt.title(type + ',' + str(term) + ',' + year + ',' + classValue)
-    plt.show()
-    plt.close()
+    plt.title(title)
+    plt.savefig('D:/GraduationThesis/pictures/' + title + '.pdf')
 
 
 def getInteralTime():
@@ -101,6 +107,9 @@ def condition(studentID,sterm,stype,sclassValue,term,type,classValue,year):
         flag = studentID.startswith('2009') and studentID.startswith('29')
     elif year == '2010':
         flag = studentID.startswith('2010')
+
+    if term == u'all':
+        sterm = term
 
     if flag:
         if (sterm == term) and (stype == type) and (sclassValue == classValue):
