@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib.pyplot as plt
-regularityWithWork = '/home/sghipr/consumeRegularityWithWork.csv'
+from pandas import Series,DataFrame
+import pandas as pd
+
+regularityWithWork = 'D:/GraduationThesis/consumeRegularityWithWork.csv'
 def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMeal'):
     """
     针对不同的学生群体进行分析
@@ -39,15 +42,127 @@ def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMea
     sumValue = getSumValue(data,year,classValue)
     for i in range(0,len(yList)):
         yList[i] /= sumValue
-
     title = type + ',' + str(term) + ',' + year + ',' + classValue + ',' + meal
+    return xList,yList,title
+
+
+def analysizeTermDistance(startIndex, type, classValueList, year='2010', meal='allMeal'):
+    """
+    横向与纵向对比不同群体的学生之间的差异性与不同学期之间的变化幅度的差异性.
+    横向：同一学期之间不同群体的对比
+    纵向：不同学期同一群体之间的对比
+    """
+    classValueDict = {}
+    for term in range(1, 9):
+        uterm = str(term).decode('utf-8')
+        for classValue in classValueList:
+            xList,yList,title = analysizeRegularity(startIndex, uterm, type, classValue, year, meal)
+            classValueDict.setdefault(classValue.encode('utf-8'), [])
+            classValueDict[classValue.encode('utf-8')].append(sum(yList))
+
+    classValuePd = DataFrame(classValueDict,index=['term1', 'term2', 'term3', 'term4', 'term5', 'term6', 'term7', 'term8'])
+    classValuePd['比就业'] = (classValuePd['录研']-classValuePd['就业'])/classValuePd['就业']
+    classValuePd['比出国出境'] = (classValuePd['录研']-classValuePd['出国出境'])/classValuePd['出国出境']
+    classValuePd['比其它'] = (classValuePd['录研']-classValuePd['其它'])/classValuePd['其它']
+
+    classValuePd.loc['CTerm2'] = (classValuePd.ix['term2'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
+    classValuePd.loc['CTerm3'] = (classValuePd.ix['term3'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
+    classValuePd.loc['CTerm4'] = (classValuePd.ix['term4'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
+    classValuePd.loc['CTerm5'] = (classValuePd.ix['term5'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
+    classValuePd.loc['CTerm6'] = (classValuePd.ix['term6'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
+    classValuePd.loc['CTerm7'] = (classValuePd.ix['term7'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
+
+    print classValuePd
+
+    classValuePd.to_csv('D:/GraduationThesis/Data/breakfastCompare.csv')
+
+def analysizeTotalRegularity(startIndex,term,type,classValueList,year='2010',meal='allMeal'):
+    xLists = []
+    yLists = []
+    labelList = []
+    for classValue in classValueList:
+        xList, yList, title = analysizeRegularity(startIndex, term, type, classValue, year, meal)
+        xLists.append(xList)
+        yLists.append(yList)
+        labelList.append(classValue)
+
+    # title = term + ',' + type + ','
+    # for classValue in classValueList:
+    #     title = title + '-' + classValue
+
+    return xLists,yLists
+
+    #plotMultiplePictures(xLists, yLists, labelList,title)
+
+
+def plotMultiplePictures(xLists, yLists, labelList, title):
+    """
+    将多个不同毕业去向的群体的学生的行为表达在一个图中.
+    """
+    plt.figure(figsize=(16, 9))
+    for xList, yList, label in zip(xLists, yLists, labelList):
+        plt.plot(range(1, len(xList) + 1), yList, markersize=10, label=label)
+        plt.grid(True)
+
+    plt.xticks(range(1, len(xLists[0]) + 1), xList, rotation=45)
+    plt.ylabel('frequences')
+    plt.title(title)
+    plt.legend()
+    plt.savefig('D:/GraduationThesis/pictures/' + title + '.pdf')
+
+
+def plotTermAxPictures(startIndex, type, classValueList, year='2010', meal='allMeal'):
+    """
+    针对type在六个学期的变化情况.(例如type取早餐)
+    默认是六个学期.
+    因此整个图形就是3行2列的布局.
+    """
+    f, axes = plt.subplots(4, 2, sharex=True, sharey=True,figsize=(8,8))
+
+    plotAxPictures(axes[0,0], u'1', startIndex, type, classValueList, year, meal)
+    plotAxPictures(axes[0,1], u'2', startIndex, type, classValueList, year, meal)
+    plotAxPictures(axes[1,0], u'3', startIndex, type, classValueList, year, meal)
+    plotAxPictures(axes[1,1], u'4', startIndex, type, classValueList, year, meal)
+    plotAxPictures(axes[2,0], u'5', startIndex, type, classValueList, year, meal)
+    plotAxPictures(axes[2,1], u'6', startIndex, type, classValueList, year, meal)
+    plotAxPictures(axes[3,0], u'7', startIndex, type, classValueList, year, meal)
+    plotAxPictures(axes[3,1], u'8', startIndex, type, classValueList, year, meal)
+
+    f.savefig('D:/GraduationThesis/pictures/breakfastAllCompare8.pdf')
+
+
+
+
+
+def plotAxPictures(ax,term,startIndex,type, classValueList,year,meal):
+    """
+    一个大图中的子图.
+    """
+    plt.sca(ax)
+    xLists,yLists = analysizeTotalRegularity(startIndex,term,type,classValueList,year,meal)
+
+    for xList, yList, label in zip(xLists, yLists, classValueList):
+        plt.plot(range(1, len(xList) + 1), yList, label=label)
+        plt.grid(True)
+
+    plt.xticks(range(1, len(xLists[0]) + 1), xList, rotation=45)
+    plt.title('term' + str(term))
+    plt.legend(loc='best', fontsize = 'x-small')
+
+
+
+
+
+def plotPictures(title,xList,yList):
+
     plt.figure(figsize=(20,9))
     plt.plot(range(1,len(xList) + 1),yList,color='black', markersize=10)
     plt.grid(True)
     plt.xticks(range(1,len(xList) + 1),xList,rotation=45)
     plt.ylabel('frequences')
     plt.title(title)
-    plt.savefig('/home/sghipr/GraduationThesis/pictures/' + title + '.png')
+    plt.savefig('D:/GraduationThesis/pictures/' + title + '.pdf')
+
 
 
 def getSumValue(data,year,classValue,t=180.0):
@@ -130,7 +245,7 @@ def getInteralTime(meal):
         timeInterals['1130-1200'] = 0
         timeInterals['1200-1230'] = 0
         timeInterals['1230-1300'] = 0
-        timeInterals['1200-1330'] = 0
+        timeInterals['1300-1330'] = 0
     elif meal == 'dinner':
         timeInterals['1630-1700'] = 0
         timeInterals['1700-1730'] = 0

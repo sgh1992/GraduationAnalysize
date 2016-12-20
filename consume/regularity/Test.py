@@ -7,11 +7,11 @@ term = u'1'
 type = u'mess'
 year = u'2010'
 classValue = u'出国出境'
-meal = 'allMeal'
+meal = 'breakfast'
 termList = [u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8']
 classValueList = [u'就业',u'录研',u'出国出境',u'其它']
 mealList = ['breakfast', 'lunch', 'dinner','allMeal']
-regu.analysizeRegularity(startIndex,term,type,classValue,year,meal)
+# regu.analysizeRegularity(startIndex,term,type,classValue,year,meal)
 
 # for classValue in classValueList:
 #     regu.analysizeRegularity(startIndex,term,type,classValue,year)
@@ -20,3 +20,18 @@ regu.analysizeRegularity(startIndex,term,type,classValue,year,meal)
 #     for term in termList:
 #         for meal in mealList:
 #             regu.analysizeRegularity(startIndex,term,type,classValue,year,meal)
+
+# regu.analysizeTotalRegularity(startIndex,term,type,classValueList,year,meal)
+
+# regu.plotTermAxPictures(startIndex,type,classValueList,year,meal)
+
+regu.analysizeTermDistance(startIndex, type, classValueList, year, meal)
+
+
+
+
+
+
+
+
+
