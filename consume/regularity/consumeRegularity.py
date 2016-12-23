@@ -61,9 +61,9 @@ def analysizeTermDistance(startIndex, type, classValueList, year='2010', meal='a
             classValueDict[classValue.encode('utf-8')].append(sum(yList))
 
     classValuePd = DataFrame(classValueDict,index=['term1', 'term2', 'term3', 'term4', 'term5', 'term6', 'term7', 'term8'])
-    classValuePd['比就业'] = (classValuePd['录研']-classValuePd['就业'])/classValuePd['就业']
-    classValuePd['比出国出境'] = (classValuePd['录研']-classValuePd['出国出境'])/classValuePd['出国出境']
-    classValuePd['比其它'] = (classValuePd['录研']-classValuePd['其它'])/classValuePd['其它']
+    classValuePd['比就业'] = (classValuePd['就业']-classValuePd['录研'])/classValuePd['录研']
+    classValuePd['比出国深造'] = (classValuePd['出国深造']-classValuePd['录研'])/classValuePd['录研']
+    classValuePd['比其它'] = (classValuePd['其它']-classValuePd['录研'])/classValuePd['录研']
 
     classValuePd.loc['CTerm2'] = (classValuePd.ix['term2'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
     classValuePd.loc['CTerm3'] = (classValuePd.ix['term3'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
@@ -71,10 +71,12 @@ def analysizeTermDistance(startIndex, type, classValueList, year='2010', meal='a
     classValuePd.loc['CTerm5'] = (classValuePd.ix['term5'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
     classValuePd.loc['CTerm6'] = (classValuePd.ix['term6'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
     classValuePd.loc['CTerm7'] = (classValuePd.ix['term7'] - classValuePd.ix['term1'])/classValuePd.ix['term1']
+    classValuePd.loc['CTerm8'] = (classValuePd.ix['term8'] - classValuePd.ix['term1']) / classValuePd.ix['term1']
 
     print classValuePd
 
-    classValuePd.to_csv('D:/GraduationThesis/Data/breakfastCompare.csv')
+    result = 'D:/GraduationThesis/Data/' + meal.encode('utf-8') + 'DataCompare3.csv'
+    classValuePd.to_csv(result)
 
 def analysizeTotalRegularity(startIndex,term,type,classValueList,year='2010',meal='allMeal'):
     xLists = []
@@ -128,9 +130,8 @@ def plotTermAxPictures(startIndex, type, classValueList, year='2010', meal='allM
     plotAxPictures(axes[3,0], u'7', startIndex, type, classValueList, year, meal)
     plotAxPictures(axes[3,1], u'8', startIndex, type, classValueList, year, meal)
 
-    f.savefig('D:/GraduationThesis/pictures/breakfastAllCompare8.pdf')
-
-
+    result = 'D:/GraduationThesis/pictures/' + meal.encode('utf-8') + 'AllCompare8.pdf'
+    f.savefig(result)
 
 
 
@@ -241,6 +242,7 @@ def getInteralTime(meal):
         timeInterals['0830-0900'] = 0
         timeInterals['0900-0930'] = 0
     elif meal == 'lunch':
+        timeInterals['1030-1100'] = 0
         timeInterals['1100-1130'] = 0
         timeInterals['1130-1200'] = 0
         timeInterals['1200-1230'] = 0

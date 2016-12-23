@@ -1,6 +1,6 @@
 # !/usr/bin/python
 #  -*- coding: utf-8 -*-
-import consumeRegularity as regu
+import ConsumeRegularity as regu
 
 startIndex = 3
 term = u'1'
@@ -9,7 +9,7 @@ year = u'2010'
 classValue = u'出国出境'
 meal = 'breakfast'
 termList = [u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8']
-classValueList = [u'就业',u'录研',u'出国出境',u'其它']
+classValueList = [u'就业',u'录研',u'出国深造',u'其它']
 mealList = ['breakfast', 'lunch', 'dinner','allMeal']
 # regu.analysizeRegularity(startIndex,term,type,classValue,year,meal)
 
@@ -23,9 +23,9 @@ mealList = ['breakfast', 'lunch', 'dinner','allMeal']
 
 # regu.analysizeTotalRegularity(startIndex,term,type,classValueList,year,meal)
 
-# regu.plotTermAxPictures(startIndex,type,classValueList,year,meal)
+regu.plotTermAxPictures(startIndex, type, classValueList, year, meal)
 
-regu.analysizeTermDistance(startIndex, type, classValueList, year, meal)
+#regu.analysizeTermDistance(startIndex, type, classValueList, year, meal)
 
 
 
