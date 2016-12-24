@@ -62,6 +62,17 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
         return type, entropyDict
 
 
+def getEntropyData(startIndex, type, termList, workList, year, meal):
+    """
+    获得数据
+    """
+    stype,entropyDict = figureEntropy(startIndex, type, termList, workList, year, meal)
+    pd = DataFrame(entropyDict)
+    print pd
+    result = 'D:/GraduationThesis/Data/' + stype + '_entropy.csv'
+    pd.to_csv(result)
+
+
 def plotEntropy(startIndex, type, termList, workList, year, meal):
     """
     刻画出某个类型type的学生行为熵
@@ -81,10 +92,11 @@ def plotEntropy(startIndex, type, termList, workList, year, meal):
         plt.plot(range(1, len(xList) + 1), yList, label=work.decode('utf-8'))
     plt.grid(True)
     plt.xticks(range(1, len(xList) + 1), xList)
-    plt.xlabel('terms')
-    plt.ylabel('entropy')
-    plt.title(stype)
+    plt.xlabel('Term')
+    plt.ylabel('Entropy')
+    #plt.title(stype)
     plt.legend(loc='best')
+    plt.tight_layout()
 
     result = 'D:/GraduationThesis/pictures/' + stype + '_entropy.pdf'
     plt.savefig(result)
