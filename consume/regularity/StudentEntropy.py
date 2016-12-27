@@ -11,9 +11,7 @@ import numpy as np
 包括学生食堂一日三餐的熵和宿舍洗澡消费时的熵等.
 """
 
-dataFile = 'D:/GraduationThesis/consumeRegularityWithWork.csv'
-
-
+dataFile = 'D:/GraduationThesis/consumeRegularityWithWork_DaySingleCount.csv'
 
 def figureEntropy(startIndex, type, termList, workList, year='2010', meal='breakfast'):
     """
@@ -21,20 +19,19 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
     meal在只有在计算type=mess时才有效.
     """
     data = [line.strip().decode('utf-8').split(',') for line in open(dataFile)]
-    allTimeList = sorted(conRegu.getInteralTime('allMeal').keys())
-    realTimeList = []
+    allTimeList = sorted(conRegu.getInteralTime('allMeal').keys()) #day
+    #allTimeList = sorted(conRegu.getWeekInteralTime().keys()) # weekCycle
     if type != 'mess':
         realTimeList = allTimeList[:]
-
     else:
         realTimeList = sorted(conRegu.getInteralTime(meal).keys())
 
     entropyDict = {}
     peopleNumDict = {}
 
-    workNums = getWorkDict(data,year,workList)
+    workNums = getWorkDict(data, year, workList)
     for item in workNums.items():
-        print item[0].decode('utf-8'),item[1]
+        print item[0].decode('utf-8'), item[1]
 
     for line in data:
         studentID = line[0].encode('utf-8')
@@ -43,7 +40,7 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
         stype = line[2].encode('utf-8')
         if condition(studentID, stype, sterm, type, termList, year, work, workList):
 
-            entropyDict.setdefault(work,{})
+            entropyDict.setdefault(work, {})
             entropyDict[work].setdefault(sterm, 0.0)
 
             peopleNumDict.setdefault(work, {})
@@ -52,9 +49,11 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
             peopleNumDict[work][sterm].add(studentID)
             entropyDict[work][sterm] += entropy(startIndex, line, allTimeList, realTimeList)
 
+    print 'sterm',sterm
     for work in peopleNumDict.keys():
         for term in termList:
-            entropyDict[work][term] /= len(peopleNumDict[work][sterm])
+            entropyDict[work][term] /= len(peopleNumDict[work][term])
+            print work, term, entropyDict[work][term], len(peopleNumDict[work][term])
 
     if type == 'mess':
         return meal, entropyDict
@@ -98,7 +97,7 @@ def plotEntropy(startIndex, type, termList, workList, year, meal):
     plt.legend(loc='best')
     plt.tight_layout()
 
-    result = 'D:/GraduationThesis/pictures/' + stype + '_entropy.pdf'
+    result = 'D:/GraduationThesis/pictures/' + stype + '_entropyDay.pdf'
     plt.savefig(result)
 
 
@@ -118,6 +117,8 @@ def entropy(startIndex, line, allTimeList, realTimeList):
             continue
         probs = (value + 0.0)/sum(valueList)
         entropyValue -= (probs) * np.log(probs)
+    if entropyValue > 3.8:
+        print entropyValue
     return entropyValue
 
 
@@ -153,3 +154,14 @@ def getWorkDict(data,year,workList):
     for work in worksDict:
         workNumDict[work] = len(worksDict[work])
     return workNumDict
+
+
+def plotDistribution(startIndex, type, year='2010', meal='allMeal'):
+
+    data = [line.strip().decode('utf-8') for line in open(dataFile)]
+
+    for line in data:
+
+
+
+

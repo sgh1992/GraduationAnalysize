@@ -20,7 +20,6 @@ mealList = ['breakfast', 'lunch', 'dinner','allMeal']
 #     for term in termList:
 #         for meal in mealList:
 #             regu.analysizeRegularity(startIndex,term,type,classValue,year,meal)
-
 # regu.analysizeTotalRegularity(startIndex,term,type,classValueList,year,meal)
 
 regu.plotTermAxPictures(startIndex, type, classValueList, year, meal)
