@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from pandas import Series,DataFrame
 import pandas as pd
 
-regularityWithWork = 'D:/GraduationThesis/consumeRegularityWithWork.csv'
+regularityWithWork = 'D:/GraduationThesis/consumeRegularityWithWork_DaySingleCount.csv'
 def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMeal'):
     """
     针对不同的学生群体进行分析
@@ -27,11 +27,11 @@ def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMea
         stype = line[2]
         sclassValue = line[-1]
         if condition(studentID, sterm, stype, sclassValue, term, type, classValue, year):
-            for index in range(startIndex,len(line)-1):
+            for index in range(startIndex, len(line)-1):
                 if interalLists[index - startIndex] in mealInterals:
                     mealInterals[interalLists[index - startIndex]] += int(line[index])
 
-    result = sorted(mealInterals.items(), key= lambda x:x[0])
+    result = sorted(mealInterals.items(), key=lambda x:x[0])
     xList = []
     yList = []
     for x, y in result:
@@ -119,7 +119,7 @@ def plotTermAxPictures(startIndex, type, classValueList, year='2010', meal='allM
     默认是六个学期.
     因此整个图形就是3行2列的布局.
     """
-    f, axes = plt.subplots(4, 2, sharex=True, sharey=True,figsize=(8,8))
+    f, axes = plt.subplots(4, 2, sharex=True, sharey=True, figsize=(8, 8))
 
     plotAxPictures(axes[0,0], u'1', startIndex, type, classValueList, year, meal)
     plotAxPictures(axes[0,1], u'2', startIndex, type, classValueList, year, meal)
@@ -180,6 +180,17 @@ def getSumValue(data,year,classValue,t=180.0):
             if (not studentID.startswith('2010')) and sclassValue == classValue:
                 sidSet.add(studentID)
     return len(sidSet) * t
+
+def getWeekInteralTime():
+    timeInterals = dict()
+    timeInterals['Monday'] = 0
+    timeInterals['Tuesday'] = 0
+    timeInterals['Wednesday'] = 0
+    timeInterals['Thursday'] = 0
+    timeInterals['Friday'] = 0
+    timeInterals['Saturday'] = 0
+    timeInterals['Sunday'] = 0
+    return timeInterals
 
 
 def getInteralTime(meal):

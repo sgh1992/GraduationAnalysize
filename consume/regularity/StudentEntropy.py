@@ -11,7 +11,7 @@ import numpy as np
 包括学生食堂一日三餐的熵和宿舍洗澡消费时的熵等.
 """
 
-dataFile = 'D:/GraduationThesis/consumeRegularityWithWork_DaySingleCount.csv'
+dataFile = 'D:/GraduationThesis/consumeRegularityWithWork_week.csv'
 
 def figureEntropy(startIndex, type, termList, workList, year='2010', meal='breakfast'):
     """
@@ -19,8 +19,8 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
     meal在只有在计算type=mess时才有效.
     """
     data = [line.strip().decode('utf-8').split(',') for line in open(dataFile)]
-    allTimeList = sorted(conRegu.getInteralTime('allMeal').keys()) #day
-    #allTimeList = sorted(conRegu.getWeekInteralTime().keys()) # weekCycle
+    #allTimeList = sorted(conRegu.getInteralTime('allMeal').keys()) #day
+    allTimeList = sorted(conRegu.getWeekInteralTime().keys()) # weekCycle
     if type != 'mess':
         realTimeList = allTimeList[:]
     else:
@@ -33,6 +33,8 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
     for item in workNums.items():
         print item[0].decode('utf-8'), item[1]
 
+    meanDict,stdDict = figureMultipleDistribution(startIndex, type, termList, workList, year, meal)
+    nums = 0
     for line in data:
         studentID = line[0].encode('utf-8')
         work = line[-1].encode('utf-8')
@@ -46,20 +48,28 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
             peopleNumDict.setdefault(work, {})
             peopleNumDict[work].setdefault(sterm, set())
 
-            peopleNumDict[work][sterm].add(studentID)
-            entropyDict[work][sterm] += entropy(startIndex, line, allTimeList, realTimeList)
+            flag, entropyValue = entropy(startIndex, line, allTimeList, realTimeList, work, sterm, meanDict, stdDict)
 
-    print 'sterm',sterm
+            peopleNumDict[work][sterm].add(studentID)
+            entropyDict[work][sterm] += entropyValue
+
+            # if flag:
+            #     peopleNumDict[work][sterm].add(studentID)
+            #     entropyDict[work][sterm] += entropyValue
+            # else:
+            #     nums += 1
+
+    print 'absoluate Nums', nums
     for work in peopleNumDict.keys():
         for term in termList:
-            entropyDict[work][term] /= len(peopleNumDict[work][term])
-            print work, term, entropyDict[work][term], len(peopleNumDict[work][term])
+            #需要根据有记录人数的占比去修正熵
+            entropyDict[work][term] = entropyDict[work][term]/len(peopleNumDict[work][term]) #* (workNums[work]/(len(peopleNumDict[work][term]) + 0.0))
+            print term,work,entropyDict[work][term],len(peopleNumDict[work][term])
 
     if type == 'mess':
         return meal, entropyDict
     else:
         return type, entropyDict
-
 
 def getEntropyData(startIndex, type, termList, workList, year, meal):
     """
@@ -97,11 +107,11 @@ def plotEntropy(startIndex, type, termList, workList, year, meal):
     plt.legend(loc='best')
     plt.tight_layout()
 
-    result = 'D:/GraduationThesis/pictures/' + stype + '_entropyDay.pdf'
+    result = 'D:/GraduationThesis/pictures/' + stype + '_entropyWeek.pdf'
     plt.savefig(result)
 
 
-def entropy(startIndex, line, allTimeList, realTimeList):
+def entropy(startIndex, line, allTimeList, realTimeList, work, term, meanDict, stdDict):
     """
     计算每个学期的熵.
     """
@@ -111,15 +121,21 @@ def entropy(startIndex, line, allTimeList, realTimeList):
         if time in realTimeList:
             valueList.append(int(line[i]))
 
+    sumValue = sum(valueList)
+    flag = True
+    if sumValue > meanDict[term][work] + 1 * stdDict[term][work] or sumValue < meanDict[term][work] - 1*stdDict[term][work]:
+        flag = False
+
     entropyValue = 0.0
     for value in valueList:
         if value == 0:
             continue
         probs = (value + 0.0)/sum(valueList)
         entropyValue -= (probs) * np.log(probs)
+
     if entropyValue > 3.8:
         print entropyValue
-    return entropyValue
+    return flag, entropyValue
 
 
 def condition(studentID, stype, sterm, type, termList, year, work, workList):
@@ -133,7 +149,6 @@ def condition(studentID, stype, sterm, type, termList, year, work, workList):
         return True
     else:
         return False
-
 
 def getWorkDict(data,year,workList):
 
@@ -156,12 +171,120 @@ def getWorkDict(data,year,workList):
     return workNumDict
 
 
-def plotDistribution(startIndex, type, year='2010', meal='allMeal'):
+def figureDistribution(startIndex, type, term, work, year='2010', meal='allMeal'):
 
-    data = [line.strip().decode('utf-8') for line in open(dataFile)]
+    data = [line.strip().decode('utf-8').split(',') for line in open(dataFile)]
+    valueList = []
+    allTimeInterals = sorted(conRegu.getInteralTime('allMeal').keys())
+    if type == 'mess':
+        realTimeInterals = sorted(conRegu.getInteralTime(meal).keys())
+    else:
+        realTimeInterals = allTimeInterals[:]
 
     for line in data:
+        studentID = line[0].encode('utf-8')
+        sterm = int(line[1])
+        stype = line[2].encode('utf-8')
+        swork = line[-1].encode('utf-8')
+        if conditionDistribution(studentID, stype, sterm, swork, type, term, work, year):
+            sumValue = 0
+            for i in range(startIndex, len(line) - 1):
+                time = allTimeInterals[startIndex-i]
+                if time in realTimeInterals:
+                    sumValue += int(line[i])
+            valueList.append(sumValue)
+
+    #print valueList
+    print 'mean',term,type,work,np.mean(valueList)
+    print 'standard devition',term,type,work,np.std(valueList)
+    return valueList,np.mean(valueList),np.std(valueList)
 
 
 
+def plotDistribution(startIndex, type, term, work, year='2010', meal='allMeal'):
 
+    valueList,meanValue,stdValue = figureDistribution(startIndex, type, term, work, year, meal)
+
+    plt.figure(figsize=(9, 6))
+    plt.hist(valueList,bins=30, normed=True)
+    plt.xlabel('count')
+    plt.ylabel('probaility')
+    result = str(term).decode('utf-8') + u',' + type.decode('utf-8') + u',' + work.decode('utf-8')
+    plt.savefig('D:/GraduationThesis/pictures/' + result + '_Distribution.pdf')
+
+
+def conditionDistribution(studentID, stype, sterm, swork, type, term, work, year):
+
+    if studentID.startswith('2010'):
+        syear = '2010'
+    else:
+        syear = '2009'
+
+    if work == 'all': #代表取全体学生的均值与方差.
+        work = swork
+
+    if syear == year and stype == type and sterm == term and swork == work:
+        return True
+    else:
+        return False
+
+def conditionMultipleDistribution(studentID, stype, sterm, swork, type, termList, workList, year):
+
+        if studentID.startswith('2010'):
+            syear = '2010'
+        else:
+            syear = '2009'
+
+        if syear == year and stype == type and sterm in termList and swork in workList:
+            return True
+        else:
+            return False
+
+
+def figureMultipleDistribution(startIndex, type, termList, workList, year='2010', meal='allMeal'):
+
+    data = [line.strip().decode('utf-8').split(',') for line in open(dataFile)]
+    valueDict = dict()
+    allTimeInterals = sorted(conRegu.getInteralTime('allMeal').keys())
+    if type == 'mess':
+        realTimeInterals = sorted(conRegu.getInteralTime(meal).keys())
+    else:
+        realTimeInterals = allTimeInterals[:]
+
+    for line in data:
+        studentID = line[0].encode('utf-8')
+        sterm = int(line[1])
+        stype = line[2].encode('utf-8')
+        swork = line[-1].encode('utf-8')
+        if conditionMultipleDistribution(studentID, stype, sterm, swork, type, termList, workList, year):
+            sumValue = 0
+            for i in range(startIndex, len(line) - 1):
+                time = allTimeInterals[startIndex-i]
+                if time in realTimeInterals:
+                    sumValue += int(line[i])
+
+            valueDict.setdefault(swork,{})
+            valueDict[swork].setdefault(sterm,[])
+            valueDict[swork][sterm].append(sumValue)
+
+    meanDict = dict()
+    stdDict = dict()
+    for term in termList:
+        sumTermValueList = []
+        meanDict.setdefault(term,{})
+        stdDict.setdefault(term,{})
+        for work in workList:
+            meanDict[term][work] = np.mean(valueDict[work][term])
+            stdDict[term][work] = np.std(valueDict[work][term])
+            sumTermValueList += valueDict[work][term]
+
+        meanDict[term]['all'] = np.mean(sumTermValueList)
+        stdDict[term]['all'] = np.std(sumTermValueList)
+
+    return meanDict,stdDict
+
+
+    #print valueList
+    # print 'mean',term,type,work,np.mean(valueList)
+    # print 'standard devition',term,type,work,np.std(valueList)
+    # return valueList,np.mean(valueList),np.std(valueList)
