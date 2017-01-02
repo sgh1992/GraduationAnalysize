@@ -9,9 +9,10 @@ import numpy as np
 """
 计算学生的行为熵
 包括学生食堂一日三餐的熵和宿舍洗澡消费时的熵等.
+学生图书馆门禁行为的熵
 """
 
-dataFile = 'D:/GraduationThesis/consumeRegularityWithWork_week.csv'
+dataFile = 'D:/GraduationThesis/librarydoor_regularityWithWork_TimeSelf.csv'
 
 def figureEntropy(startIndex, type, termList, workList, year='2010', meal='breakfast'):
     """
@@ -20,9 +21,12 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
     """
     data = [line.strip().decode('utf-8').split(',') for line in open(dataFile)]
     #allTimeList = sorted(conRegu.getInteralTime('allMeal').keys()) #day
-    allTimeList = sorted(conRegu.getWeekInteralTime().keys()) # weekCycle
+    allTimeList = sorted(conRegu.getInteralTime('librarydoor').keys()) # weekCycle
     if type != 'mess':
-        realTimeList = allTimeList[:]
+        if type == 'librarydoor':
+            realTimeList = sorted(conRegu.getInteralTime('librarydoor').keys())
+        else:
+            realTimeList = allTimeList[:]
     else:
         realTimeList = sorted(conRegu.getInteralTime(meal).keys())
 
@@ -35,6 +39,9 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
 
     meanDict,stdDict = figureMultipleDistribution(startIndex, type, termList, workList, year, meal)
     nums = 0
+
+    entropyList = {}
+
     for line in data:
         studentID = line[0].encode('utf-8')
         work = line[-1].encode('utf-8')
@@ -48,7 +55,12 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
             peopleNumDict.setdefault(work, {})
             peopleNumDict[work].setdefault(sterm, set())
 
+            entropyList.setdefault(sterm,{})
+            entropyList[sterm].setdefault(work,[])
+
             flag, entropyValue = entropy(startIndex, line, allTimeList, realTimeList, work, sterm, meanDict, stdDict)
+
+            entropyList[sterm][work].append(entropyValue)
 
             peopleNumDict[work][sterm].add(studentID)
             entropyDict[work][sterm] += entropyValue
@@ -59,17 +71,51 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
             # else:
             #     nums += 1
 
+    plotEntropyDistribution(entropyList,termList,workList)
     print 'absoluate Nums', nums
     for work in peopleNumDict.keys():
         for term in termList:
-            #需要根据有记录人数的占比去修正熵
-            entropyDict[work][term] = entropyDict[work][term]/len(peopleNumDict[work][term]) #* (workNums[work]/(len(peopleNumDict[work][term]) + 0.0))
-            print term,work,entropyDict[work][term],len(peopleNumDict[work][term])
+            entropyValueList = entropyList[term][work]
+            # for i in range(0,len(entropyValueList)):
+            #     entropyValueList[i] = np.log(1.0 + entropyValueList[i])
+            # meanValue = np.mean(entropyValueList)
+            # stdValue = np.std(entropyValueList)
+            # newList = []
+            # num = 0
+            # for value in entropyValueList:
+            #     if value > meanValue + 2*stdValue or value < meanValue - 2*stdValue:
+            #         num += 1
+            #         continue
+            #     newList.append(value)
+
+            entropyDict[work][term] = np.mean(entropyValueList) #* workNums[work]/len(entropyValueList)
+            #print 'term,work,num,entropy\t', term, work, num, entropyDict[work][term]
+            # entropyDict[work][term] = entropyDict[work][term]/len(peopleNumDict[work][term]) #* (workNums[work]/(len(peopleNumDict[work][term]) + 0.0))
+            # print term,work,entropyDict[work][term],len(peopleNumDict[work][term])
 
     if type == 'mess':
         return meal, entropyDict
     else:
         return type, entropyDict
+
+
+def plotEntropyDistribution(entropyList,termList,workList):
+    for term in termList:
+        f, axes = plt.subplots(2, 2, sharey=True, sharex=True, figsize=(12, 9))
+        for work,i in zip(workList,range(0,len(workList))):
+
+            plt.sca(axes[i/2, i%2])
+            valueList = entropyList[term][work]
+            for i in range(0,len(valueList)):
+                valueList[i] = np.log(valueList[i] + 1.0)
+            plt.hist(valueList,bins=30,normed=True)
+            plt.title(work.decode('utf-8'))
+            plt.ylabel('Frequences')
+            plt.grid(True)
+            plt.tight_layout()
+        result = 'D:/GraduationThesis/pictures/' + 'entropy_' + str(term) + '.pdf'
+        f.savefig(result)
+
 
 def getEntropyData(startIndex, type, termList, workList, year, meal):
     """
@@ -100,14 +146,14 @@ def plotEntropy(startIndex, type, termList, workList, year, meal):
             yList.append(item[1])
         plt.plot(range(1, len(xList) + 1), yList, label=work.decode('utf-8'))
     plt.grid(True)
-    plt.xticks(range(1, len(xList) + 1), xList)
+    plt.xticks(range(1, len(xList) + 1), xList, rotation=45)
     plt.xlabel('Term')
     plt.ylabel('Entropy')
     #plt.title(stype)
     plt.legend(loc='best')
     plt.tight_layout()
 
-    result = 'D:/GraduationThesis/pictures/' + stype + '_entropyWeek.pdf'
+    result = 'D:/GraduationThesis/pictures/' + stype + '_entropyHour.pdf'
     plt.savefig(result)
 
 
@@ -206,7 +252,7 @@ def plotDistribution(startIndex, type, term, work, year='2010', meal='allMeal'):
     valueList,meanValue,stdValue = figureDistribution(startIndex, type, term, work, year, meal)
 
     plt.figure(figsize=(9, 6))
-    plt.hist(valueList,bins=30, normed=True)
+    plt.hist(valueList, bins=30, normed=True)
     plt.xlabel('count')
     plt.ylabel('probaility')
     result = str(term).decode('utf-8') + u',' + type.decode('utf-8') + u',' + work.decode('utf-8')
