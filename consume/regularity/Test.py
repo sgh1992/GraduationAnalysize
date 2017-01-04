@@ -23,13 +23,13 @@ mealList = ['breakfast', 'lunch', 'dinner','allMeal']
 # regu.analysizeTotalRegularity(startIndex,term,type,classValueList,year,meal)
 
 
-for term in termList:
-    xLists,yLists = regu.analysizeTotalRegularity(startIndex,term,type,classValueList,year,meal)
-    title = type.encode('utf-8') + '_term' + term.encode('utf-8')
-    regu.plotMultiplePictures(xLists,yLists,classValueList,title)
+# for term in termList:
+#     xLists,yLists = regu.analysizeTotalRegularity(startIndex,term,type,classValueList,year,meal)
+#     title = type.encode('utf-8') + '_term' + term.encode('utf-8')
+#     regu.plotMultiplePictures(xLists,yLists,classValueList,title)
 
 
-#regu.plotTermAxPictures(startIndex, type, classValueList, year, meal)
+regu.plotTermAxPictures(startIndex, type, classValueList, year, meal)
 
 #regu.analysizeTermDistance(startIndex, type, classValueList, year, meal)
 

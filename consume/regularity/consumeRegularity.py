@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from pandas import Series,DataFrame
 import pandas as pd
 
-regularityWithWork = 'D:/GraduationThesis/consumeRegularityWithWork_DaySingleCount.csv'
+regularityWithWork = 'D:/GraduationThesis/librarydoor_regularityWithWork_TimeSelf.csv'
 def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMeal'):
     """
     针对不同的学生群体进行分析
@@ -18,7 +18,7 @@ def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMea
     :return:
     """
     data = [line.strip().decode('utf8').split(",") for line in open(regularityWithWork)]
-    timeInterals = getInteralTime('allMeal')
+    timeInterals = getInteralTime('librarydoor')
     mealInterals = getInteralTime(meal)
     interalLists = sorted(timeInterals.keys())
     for line in data:
@@ -35,9 +35,9 @@ def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMea
     xList = []
     yList = []
     for x, y in result:
-        if x > '0600' and x < '2000':
-            xList.append(x)
-            yList.append(y)
+        #if x > '0600' and x < '2000':
+        xList.append(x)
+        yList.append(y)
 
     sumValue = getSumValue(data,year,classValue)
     for i in range(0,len(yList)):
@@ -101,7 +101,7 @@ def plotMultiplePictures(xLists, yLists, labelList, title):
     """
     将多个不同毕业去向的群体的学生的行为表达在一个图中.
     """
-    plt.figure(figsize=(16, 9))
+    plt.figure(figsize=(21, 9))
     for xList, yList, label in zip(xLists, yLists, labelList):
         plt.plot(range(1, len(xList) + 1), yList, markersize=10, label=label)
         plt.grid(True)
@@ -110,16 +110,19 @@ def plotMultiplePictures(xLists, yLists, labelList, title):
     plt.ylabel('frequences')
     plt.title(title)
     plt.legend()
-    plt.savefig('D:/GraduationThesis/pictures/' + title + '.pdf')
+    plt.tight_layout()
+    result = 'D:/GraduationThesis/pictures/' + title + '.pdf'
+    plt.savefig(result)
 
 
 def plotTermAxPictures(startIndex, type, classValueList, year='2010', meal='allMeal'):
+
     """
     针对type在六个学期的变化情况.(例如type取早餐)
     默认是六个学期.
     因此整个图形就是3行2列的布局.
     """
-    f, axes = plt.subplots(4, 2, sharex=True, sharey=True, figsize=(8, 8))
+    fig, axes = plt.subplots(4, 2, sharex=True, sharey=True, figsize=(12, 8))
 
     plotAxPictures(axes[0,0], u'1', startIndex, type, classValueList, year, meal)
     plotAxPictures(axes[0,1], u'2', startIndex, type, classValueList, year, meal)
@@ -130,8 +133,10 @@ def plotTermAxPictures(startIndex, type, classValueList, year='2010', meal='allM
     plotAxPictures(axes[3,0], u'7', startIndex, type, classValueList, year, meal)
     plotAxPictures(axes[3,1], u'8', startIndex, type, classValueList, year, meal)
 
+    fig.tight_layout()
+
     result = 'D:/GraduationThesis/pictures/' + meal.encode('utf-8') + 'AllCompare8.pdf'
-    f.savefig(result)
+    fig.savefig(result)
 
 
 
@@ -146,9 +151,12 @@ def plotAxPictures(ax,term,startIndex,type, classValueList,year,meal):
         plt.plot(range(1, len(xList) + 1), yList, label=label)
         plt.grid(True)
 
-    plt.xticks(range(1, len(xLists[0]) + 1), xList, rotation=45)
+    plt.xticks(range(1, len(xLists[0]) + 1), xList, rotation=45)#rotation=45
     plt.title('term' + str(term))
     plt.legend(loc='best', fontsize = 'x-small')
+    plt.tight_layout()
+    # result = 'D:/GraduationThesis/pictures/' + meal.encode('utf-8') + '_term' + term.encode('utf-8')+'AllCompare8.pdf'
+    # plt.savefig(result)
 
 
 
@@ -159,9 +167,10 @@ def plotPictures(title,xList,yList):
     plt.figure(figsize=(20,9))
     plt.plot(range(1,len(xList) + 1),yList,color='black', markersize=10)
     plt.grid(True)
-    plt.xticks(range(1,len(xList) + 1),xList,rotation=45)
+    plt.xticks(range(1,len(xList) + 1),xList,rotation=90)
     plt.ylabel('frequences')
     plt.title(title)
+    plt.tight_layout()
     plt.savefig('D:/GraduationThesis/pictures/' + title + '.pdf')
 
 
@@ -210,6 +219,7 @@ def getInteralTime(meal):
         timeInterals['0530-0600'] = 0
         timeInterals['0600-0630'] = 0
         timeInterals['0630-0700'] = 0
+
         timeInterals['0700-0730'] = 0
         timeInterals['0730-0800'] = 0
         timeInterals['0800-0830'] = 0
@@ -240,10 +250,13 @@ def getInteralTime(meal):
         timeInterals['2030-2100'] = 0
         timeInterals['2100-2130'] = 0
         timeInterals['2130-2200'] = 0
+
         timeInterals['2200-2230'] = 0
         timeInterals['2230-2300'] = 0
         timeInterals['2300-2330'] = 0
         timeInterals['2330-0000'] = 0
+
+
     elif meal == 'breakfast':
         timeInterals['0600-0630'] = 0
         timeInterals['0630-0700'] = 0
@@ -265,6 +278,16 @@ def getInteralTime(meal):
         timeInterals['1730-1800'] = 0
         timeInterals['1800-1830'] = 0
         timeInterals['1830-1900'] = 0
+    elif meal == 'librarydoor':
+        timeInterals['0700-0830'] = 0
+        timeInterals['0830-1005'] = 0
+        timeInterals['1005-1200'] = 0
+        timeInterals['1200-1430'] = 0
+        timeInterals['1430-1605'] = 0
+        timeInterals['1605-1800'] = 0
+        timeInterals['1800-1930'] = 0
+        timeInterals['1930-2030'] = 0
+        timeInterals['2030-2200'] = 0
     else:
         print meal + ' is not right format!'
     return timeInterals

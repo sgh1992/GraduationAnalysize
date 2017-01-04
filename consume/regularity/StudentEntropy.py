@@ -12,7 +12,7 @@ import numpy as np
 学生图书馆门禁行为的熵
 """
 
-dataFile = 'D:/GraduationThesis/librarydoor_regularityWithWork_TimeSelf.csv'
+dataFile = 'D:/GraduationThesis/librarydoor_regularityWithWork_Week.csv'
 
 def figureEntropy(startIndex, type, termList, workList, year='2010', meal='breakfast'):
     """
@@ -21,10 +21,11 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
     """
     data = [line.strip().decode('utf-8').split(',') for line in open(dataFile)]
     #allTimeList = sorted(conRegu.getInteralTime('allMeal').keys()) #day
-    allTimeList = sorted(conRegu.getInteralTime('librarydoor').keys()) # weekCycle
+    #allTimeList = sorted(conRegu.getInteralTime('librarydoor').keys()) # weekCycle
+    allTimeList = sorted(conRegu.getWeekInteralTime().keys())
     if type != 'mess':
         if type == 'librarydoor':
-            realTimeList = sorted(conRegu.getInteralTime('librarydoor').keys())
+            realTimeList = sorted(conRegu.getWeekInteralTime().keys())
         else:
             realTimeList = allTimeList[:]
     else:
@@ -153,7 +154,7 @@ def plotEntropy(startIndex, type, termList, workList, year, meal):
     plt.legend(loc='best')
     plt.tight_layout()
 
-    result = 'D:/GraduationThesis/pictures/' + stype + '_entropyHour.pdf'
+    result = 'D:/GraduationThesis/pictures/' + stype + '_entropyWeek.pdf'
     plt.savefig(result)
 
 
