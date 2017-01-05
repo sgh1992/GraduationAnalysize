@@ -45,7 +45,6 @@ def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMea
     title = type + ',' + str(term) + ',' + year + ',' + classValue + ',' + meal
     return xList,yList,title
 
-
 def analysizeTermDistance(startIndex, type, classValueList, year='2010', meal='allMeal'):
     """
     横向与纵向对比不同群体的学生之间的差异性与不同学期之间的变化幅度的差异性.
@@ -59,7 +58,6 @@ def analysizeTermDistance(startIndex, type, classValueList, year='2010', meal='a
             xList,yList,title = analysizeRegularity(startIndex, uterm, type, classValue, year, meal)
             classValueDict.setdefault(classValue.encode('utf-8'), [])
             classValueDict[classValue.encode('utf-8')].append(sum(yList))
-
     classValuePd = DataFrame(classValueDict,index=['term1', 'term2', 'term3', 'term4', 'term5', 'term6', 'term7', 'term8'])
     classValuePd['比就业'] = (classValuePd['就业']-classValuePd['录研'])/classValuePd['录研']
     classValuePd['比出国深造'] = (classValuePd['出国深造']-classValuePd['录研'])/classValuePd['录研']
