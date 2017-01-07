@@ -10,7 +10,7 @@ def estimate(file, startIndex, workList, year='2010'):
         work = line[-1].encode('utf-8')
         studentID = line[0].encode('utf-8')
         if condition(studentID, work, year, workList):
-            for i in range(startIndex,len(line) - 1):
+            for i in range(startIndex,startIndex + 8):
                 term = i - startIndex + 1
                 valueDict.setdefault(term,dict())
                 valueDict[term].setdefault(work,[])
@@ -19,7 +19,7 @@ def estimate(file, startIndex, workList, year='2010'):
 
 def plotSituation(file, startIndex,workList,year,type):
     valueDict = estimate(file,startIndex,workList,year)
-    fig,axes = plt.subplots(4,2,figsize=(8,12))
+    fig,axes = plt.subplots(4,2,figsize=(8,8))
     for term in range(0,8):
         plt.sca(axes[term/2,term%2])
         dataLists = []
@@ -28,11 +28,19 @@ def plotSituation(file, startIndex,workList,year,type):
         for work, valueList in workDict.items():
             labelList.append(work.decode('utf-8'))
             dataLists.append(valueList)
-        plt.boxplot(dataLists)
+        plt.boxplot(dataLists,sym='')
         plt.xticks(range(1,len(dataLists) + 1),labelList)
-        plt.title('Term' + str(term + 1))
+        plt.title('term' + str(term + 1))
+        if term/2 == 1 and term % 2 == 0:
+            plt.ylabel(type)
+        plt.grid(True)
         plt.tight_layout()
-    result = '/home/sghipr/' + type + '.pdf'
+    # fig.add_subplot(111, frameon=False)
+    # # hide tick and tick label of the big axes
+    # plt.tick_params(labelcolor='none', top='off', bottom='off', left='off', right='off')
+    # plt.ylabel("sumAmount")
+    # plt.tight_layout()
+    result = 'D:/GraduationThesis/pictures/' + type + '.pdf'
     fig.savefig(result)
 
 def condition(studentID, work, year, workList):
