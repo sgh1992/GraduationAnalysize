@@ -136,14 +136,12 @@ def plotTermAxPictures(startIndex, type, classValueList, year='2010', meal='allM
     result = 'D:/GraduationThesis/pictures/' + meal.encode('utf-8') + 'AllCompare8.pdf'
     fig.savefig(result)
 
-
-
 def plotAxPictures(ax,term,startIndex,type, classValueList,year,meal):
     """
     一个大图中的子图.
     """
     plt.sca(ax)
-    xLists,yLists = analysizeTotalRegularity(startIndex,term,type,classValueList,year,meal)
+    xLists,yLists = analysizeTotalRegularity(startIndex, term, type, classValueList, year, meal)
 
     for xList, yList, label in zip(xLists, yLists, classValueList):
         plt.plot(range(1, len(xList) + 1), yList, label=label)
@@ -155,9 +153,6 @@ def plotAxPictures(ax,term,startIndex,type, classValueList,year,meal):
     plt.tight_layout()
     # result = 'D:/GraduationThesis/pictures/' + meal.encode('utf-8') + '_term' + term.encode('utf-8')+'AllCompare8.pdf'
     # plt.savefig(result)
-
-
-
 
 
 def plotPictures(title,xList,yList):
