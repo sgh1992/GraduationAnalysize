@@ -91,7 +91,7 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
 
             entropyDict[work][term] = np.mean(entropyValueList) #* workNums[work]/len(entropyValueList)
             #print 'term,work,num,entropy\t', term, work, num, entropyDict[work][term]
-            # entropyDict[work][term] = entropyDict[work][term]/len(peopleNumDict[work][term]) #* (workNums[work]/(len(peopleNumDict[work][term]) + 0.0))
+            #entropyDict[work][term] = entropyDict[work][term]/len(peopleNumDict[work][sterm]) #* (workNums[work]/(len(peopleNumDict[work][term]) + 0.0))
             # print term,work,entropyDict[work][term],len(peopleNumDict[work][term])
 
     if type == 'mess':
@@ -147,11 +147,11 @@ def plotEntropy(startIndex, type, termList, workList, year, meal):
             yList.append(item[1])
         plt.plot(range(1, len(xList) + 1), yList, label=work.decode('utf-8'))
     plt.grid(True)
-    plt.xticks(range(1, len(xList) + 1), xList, rotation=45)
-    plt.xlabel('Term')
-    plt.ylabel('Entropy')
+    plt.xticks(range(1, len(xList) + 1), xList, fontsize = 9)
+    plt.xlabel('Term',fontsize=9)
+    plt.ylabel('Entropy',fontsize=9)
     #plt.title(stype)
-    plt.legend(loc='best')
+    plt.legend(loc='best',prop={'size':9})
     plt.tight_layout()
 
     result = 'D:/GraduationThesis/pictures/' + stype + '_entropyWeek.pdf'

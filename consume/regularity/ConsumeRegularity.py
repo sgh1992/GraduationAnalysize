@@ -130,9 +130,7 @@ def plotTermAxPictures(startIndex, type, classValueList, year='2010', meal='allM
     plotAxPictures(axes[2,1], u'6', startIndex, type, classValueList, year, meal)
     plotAxPictures(axes[3,0], u'7', startIndex, type, classValueList, year, meal)
     plotAxPictures(axes[3,1], u'8', startIndex, type, classValueList, year, meal)
-
     fig.tight_layout()
-
     result = 'D:/GraduationThesis/pictures/' + meal.encode('utf-8') + 'AllCompare8.pdf'
     fig.savefig(result)
 

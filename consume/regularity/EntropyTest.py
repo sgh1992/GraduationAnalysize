@@ -6,7 +6,7 @@ startIndex = 3
 termList = [1, 2, 3, 4, 5, 6, 7, 8]
 type='librarydoor'
 year='2010'
-meal = 'dinner'
+meal = 'breakfast'
 workList = ['录研', '就业', '出国深造', '其它']
 
 #se.getEntropyData(startIndex, type, termList, workList, year, meal)
