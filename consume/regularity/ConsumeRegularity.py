@@ -120,7 +120,7 @@ def plotTermAxPictures(startIndex, type, classValueList, year='2010', meal='allM
     默认是六个学期.
     因此整个图形就是3行2列的布局.
     """
-    fig, axes = plt.subplots(4, 2, sharex=True, sharey=True, figsize=(9, 7))
+    fig, axes = plt.subplots(4, 2, sharex=True, sharey=True, figsize=(6, 7))
 
     plotAxPictures(axes[0,0], u'1', startIndex, type, classValueList, year, meal)
     plotAxPictures(axes[0,1], u'2', startIndex, type, classValueList, year, meal)
