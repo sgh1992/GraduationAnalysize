@@ -12,7 +12,7 @@ import numpy as np
 学生图书馆门禁行为的熵
 """
 
-dataFile = 'D:/GraduationThesis/librarydoor_regularityWithWork_Week.csv'
+dataFile = 'D:/GraduationThesis/consumeRegularityWithWork.csv'
 
 def figureEntropy(startIndex, type, termList, workList, year='2010', meal='breakfast'):
     """
@@ -20,9 +20,9 @@ def figureEntropy(startIndex, type, termList, workList, year='2010', meal='break
     meal在只有在计算type=mess时才有效.
     """
     data = [line.strip().decode('utf-8').split(',') for line in open(dataFile)]
-    #allTimeList = sorted(conRegu.getInteralTime('allMeal').keys()) #day
+    allTimeList = sorted(conRegu.getInteralTime('allMeal').keys()) #day
     #allTimeList = sorted(conRegu.getInteralTime('librarydoor').keys()) # weekCycle
-    allTimeList = sorted(conRegu.getWeekInteralTime().keys())
+    #allTimeList = sorted(conRegu.getWeekInteralTime().keys())
     if type != 'mess':
         if type == 'librarydoor':
             realTimeList = sorted(conRegu.getWeekInteralTime().keys())
@@ -148,8 +148,8 @@ def plotEntropy(startIndex, type, termList, workList, year, meal):
         plt.plot(range(1, len(xList) + 1), yList, label=work.decode('utf-8'))
     plt.grid(True)
     plt.xticks(range(1, len(xList) + 1), xList, fontsize = 9)
-    plt.xlabel('Term',fontsize=9)
-    plt.ylabel('Entropy',fontsize=9)
+    plt.xlabel('term',fontsize=12)
+    plt.ylabel('entropy',fontsize=12)
     #plt.title(stype)
     plt.legend(loc='best',prop={'size':9})
     plt.tight_layout()

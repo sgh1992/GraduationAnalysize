@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib.pyplot as plt
-from pandas import Series,DataFrame
+from pandas import Series, DataFrame
 import pandas as pd
 
-regularityWithWork = 'D:/GraduationThesis/librarydoor_regularityWithWork_TimeSelf.csv'
+regularityWithWork = 'D:/GraduationThesis/consumeRegularityWithWork.csv'
 def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMeal'):
     """
     针对不同的学生群体进行分析
@@ -18,7 +18,7 @@ def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMea
     :return:
     """
     data = [line.strip().decode('utf8').split(",") for line in open(regularityWithWork)]
-    timeInterals = getInteralTime('librarydoor')
+    timeInterals = getInteralTime('allMeal')
     mealInterals = getInteralTime(meal)
     interalLists = sorted(timeInterals.keys())
     for line in data:
@@ -39,11 +39,11 @@ def analysizeRegularity(startIndex,term,type,classValue,year='2010',meal='allMea
         xList.append(x)
         yList.append(y)
 
-    sumValue = getSumValue(data,year,classValue)
+    sumValue = getSumValue(data, year, classValue)
     for i in range(0,len(yList)):
         yList[i] /= sumValue
     title = type + ',' + str(term) + ',' + year + ',' + classValue + ',' + meal
-    return xList,yList,title
+    return xList, yList, title
 
 def analysizeTermDistance(startIndex, type, classValueList, year='2010', meal='allMeal'):
     """
@@ -120,7 +120,7 @@ def plotTermAxPictures(startIndex, type, classValueList, year='2010', meal='allM
     默认是六个学期.
     因此整个图形就是3行2列的布局.
     """
-    fig, axes = plt.subplots(4, 2, sharex=True, sharey=True, figsize=(12, 8))
+    fig, axes = plt.subplots(4, 2, sharex=True, sharey=True, figsize=(9, 7))
 
     plotAxPictures(axes[0,0], u'1', startIndex, type, classValueList, year, meal)
     plotAxPictures(axes[0,1], u'2', startIndex, type, classValueList, year, meal)
@@ -130,6 +130,8 @@ def plotTermAxPictures(startIndex, type, classValueList, year='2010', meal='allM
     plotAxPictures(axes[2,1], u'6', startIndex, type, classValueList, year, meal)
     plotAxPictures(axes[3,0], u'7', startIndex, type, classValueList, year, meal)
     plotAxPictures(axes[3,1], u'8', startIndex, type, classValueList, year, meal)
+
+    #fig.text(0.001, 0.5, 'frequency', va='center', rotation='vertical',fontsize=10)
     fig.tight_layout()
     result = 'D:/GraduationThesis/pictures/' + meal.encode('utf-8') + 'AllCompare8.pdf'
     fig.savefig(result)
@@ -145,9 +147,11 @@ def plotAxPictures(ax,term,startIndex,type, classValueList,year,meal):
         plt.plot(range(1, len(xList) + 1), yList, label=label)
         plt.grid(True)
 
-    plt.xticks(range(1, len(xLists[0]) + 1), xList, rotation=45)#rotation=45
-    plt.title('term' + str(term))
+    plt.xticks(range(1, len(xLists[0]) + 1), xList, rotation=45, fontsize=10)#rotation=45
+    plt.title('term' + str(term),fontsize=11)
     plt.legend(loc='best', fontsize = 'x-small')
+    if term == u'5':
+        plt.ylabel('frequency',fontsize=12)
     plt.tight_layout()
     # result = 'D:/GraduationThesis/pictures/' + meal.encode('utf-8') + '_term' + term.encode('utf-8')+'AllCompare8.pdf'
     # plt.savefig(result)
